@@ -111,18 +111,17 @@ public class Graph {
 			int sumaPierwszejDlugosci = -1;
 			int tmpSumaPierwszejDlugosci = -1;
 			int sizeWszystkieDrogi = -1;
-			for (int i = 0; i < wszystkieDrogi(wyjsciowe).size(); i++) {
-				ArrayList<String> a = new ArrayList<>(wszystkieDrogi(wyjsciowe));
-				sizeWszystkieDrogi = wszystkieDrogi(wyjsciowe).size();
-				tmpNazwa = nazwyMiast[i];
+			for (int i = 0; i < spisPolaczen[wyjscInt].size(); i++) {
+			
+				tmpNazwa = nazwyMiast[spisPolaczen[wyjscInt].get(i).gdzie];
 				tmpInt = poszukIndeksaMiasta(tmpNazwa);
 				tmpSumaPierwszejDlugosci = spisPolaczen[wyjscInt].get(i).dlugosc;
 
 				if (tmpSumaPierwszejDlugosci < sumaPierwszejDlugosci || sumaPierwszejDlugosci == -1)
 					sumaPierwszejDlugosci = tmpSumaPierwszejDlugosci;
 
-				for (int j = 0; j < wszystkieDrogi(tmpNazwa).size(); j++) {
-					sizeWszystkieDrogi = wszystkieDrogi(tmpNazwa).size();
+				for (int j = 0; j < spisPolaczen[tmpInt].size(); j++) {
+					
 					if (czyPolaczone(tmpNazwa, docelowe)) {
 						tmpSumaDlugosci = sumaPierwszejDlugosci + spisPolaczen[tmpInt].get(j).dlugosc;
 						if (tmpSumaDlugosci < sumaDlugosci || sumaDlugosci == -1)
@@ -211,12 +210,13 @@ public class Graph {
 		g.dodajPolaczenie(1, 2, 2);
 		g.dodajPolaczenie(1, 2, 20);
 		g.dodajPolaczenie(3, 2, 1);
+		g.dodajPolaczenie(2, 4, 1);
 
 		g.zmienNazweMiasta("A", 0);
 		g.zmienNazweMiasta("B", 1);
 		g.zmienNazweMiasta("D", 3);
 		g.zmienNazweMiasta("C", 2);
-		// g.zmienNazweMiasta("E", 4);
+		g.zmienNazweMiasta("E", 4);
 
 		// g.wszystkieDrogi("A");
 		// g.najszybszaDroga("A", "B");
