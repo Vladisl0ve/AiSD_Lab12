@@ -3,6 +3,7 @@ package pl.graph;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Graph {
@@ -34,25 +35,44 @@ public class Graph {
 	public void dodajPolaczenie(int jakieMiasto, int gdzie, int dlugosc) {
 		// int jakieInt = poszukIndeksaMiasta(jakieMiasto);
 		// int gdzieInt = poszukIndeksaMiasta(gdzie);
+
+		for (int i = 0; i < spisPolaczen[jakieMiasto].size(); i++) {
+			if (spisPolaczen[jakieMiasto].get(i).gdzie == gdzie
+					&& spisPolaczen[jakieMiasto].get(i).dlugosc == dlugosc) {
+				System.out.println("Juz jest takie polaczenie");
+				return;
+			}
+		}
+
 		spisPolaczen[jakieMiasto].add(new Polaczenie(gdzie, dlugosc));
+		System.out.println("Polaczenie jest dodane");
 	}
 
 	public void dodajPolaczenie(String jakieMiasto, String gdzie, int dlugosc) {
 		int jakieInt = poszukIndeksaMiasta(jakieMiasto);
 		int gdzieInt = poszukIndeksaMiasta(gdzie);
-		spisPolaczen[jakieInt].add(new Polaczenie(gdzieInt, dlugosc));
+
+		dodajPolaczenie(jakieInt, gdzieInt, dlugosc);
+
 	}
 
-	public void dodajPolaczenie(String jakieMiasto, int gdzie, int dlugosc) {
-		int jakieInt = poszukIndeksaMiasta(jakieMiasto);
-		// int gdzieInt = poszukIndeksaMiasta(gdzie);
-		spisPolaczen[jakieInt].add(new Polaczenie(gdzie, dlugosc));
-	}
+	public void usunacPolaczenie(int jakieMiasto, int gdzie, int dlugosc) {
 
-	public void dodajPolaczenie(int jakieMiasto, String gdzie, int dlugosc) {
-		// int jakieInt = poszukIndeksaMiasta(jakieMiasto);
-		int gdzieInt = poszukIndeksaMiasta(gdzie);
-		spisPolaczen[jakieMiasto].add(new Polaczenie(gdzieInt, dlugosc));
+		boolean flag = false;
+
+		for (int i = 0; i < spisPolaczen[jakieMiasto].size(); i++) {
+			if (spisPolaczen[jakieMiasto].get(i).gdzie == gdzie
+					&& spisPolaczen[jakieMiasto].get(i).dlugosc == dlugosc) {
+				spisPolaczen[jakieMiasto].remove(i);
+				flag = true;
+			}
+		}
+
+		if (flag)
+			System.out.println("Polaczenie zostalo usuniete");
+		else
+			System.out.println("Nie ma takiego polaczenie");
+
 	}
 
 	public ArrayList<String> wszystkieDrogi(String miasto) {
@@ -67,13 +87,21 @@ public class Graph {
 			arr.add(nazwyMiast[gdzieIndeks]);
 		}
 
-//		Set<String> miastaSet = new HashSet<String>();
-//		miastaSet.addAll(arr);
-//		arr.clear();
-//		arr.addAll(miastaSet);
+		Set<String> miastaSet = new HashSet<String>();
+		miastaSet.addAll(arr);
+		arr.clear();
+		arr.addAll(miastaSet);
 
-		// System.out.println("Miasto " + miasto + " ma drogi do miast: " + arr);
+		System.out.println("Miasto " + miasto + " ma drogi do miast: " + arr);
 		return arr;
+
+	}
+
+	public ArrayList<String> wszystkieDrogi(int miasto) {
+
+		String nazwa = nazwyMiast[miasto];
+
+		return wszystkieDrogi(nazwa);
 
 	}
 
@@ -110,9 +138,8 @@ public class Graph {
 			int tmpSumaDlugosci = -1;
 			int sumaPierwszejDlugosci = -1;
 			int tmpSumaPierwszejDlugosci = -1;
-			int sizeWszystkieDrogi = -1;
 			for (int i = 0; i < spisPolaczen[wyjscInt].size(); i++) {
-			
+
 				tmpNazwa = nazwyMiast[spisPolaczen[wyjscInt].get(i).gdzie];
 				tmpInt = poszukIndeksaMiasta(tmpNazwa);
 				tmpSumaPierwszejDlugosci = spisPolaczen[wyjscInt].get(i).dlugosc;
@@ -121,7 +148,7 @@ public class Graph {
 					sumaPierwszejDlugosci = tmpSumaPierwszejDlugosci;
 
 				for (int j = 0; j < spisPolaczen[tmpInt].size(); j++) {
-					
+
 					if (czyPolaczone(tmpNazwa, docelowe)) {
 						tmpSumaDlugosci = sumaPierwszejDlugosci + spisPolaczen[tmpInt].get(j).dlugosc;
 						if (tmpSumaDlugosci < sumaDlugosci || sumaDlugosci == -1)
@@ -132,9 +159,11 @@ public class Graph {
 				}
 
 			}
-			System.out.println(sumaDlugosci);
-
-			System.out.println("Nie ma laczenie");
+			if (sumaDlugosci != -1)
+				System.out.println("Najszybsza droga z miasta " + wyjsciowe + " do miasta " + docelowe
+						+ " jest o dlugosci: " + sumaDlugosci);
+			else
+				System.out.println("Nie ma laczenie w ciagu 2 miast");
 			return;
 		}
 
@@ -160,13 +189,23 @@ public class Graph {
 		return result;
 	}
 
-	public String wszystkieMiastaZDrogami() {
+	public void wszystkieMiastaZDrogami() {
 		String result = "";
 		for (int i = 0; i < nazwyMiast.length; i++) {
 			if (!spisPolaczen[i].isEmpty())
 				result += nazwyMiast[i] + "=>" + spisPolaczen[i] + "\n";
 		}
-		return result;
+		System.out.println(result);
+	}
+
+	public void wszystkieMiasta() {
+
+		String result = "";
+		for (int i = 0; i < nazwyMiast.length; i++)
+			result += nazwyMiast[i] + "=>" + spisPolaczen[i] + "\n";
+
+		System.out.println(result);
+
 	}
 
 	public int getIloscMiast() {
@@ -194,16 +233,97 @@ public class Graph {
 
 	}
 
+	public void menu() {
+
+		Scanner scan = new Scanner(System.in);
+
+		int key = -1;
+		System.out.println("Mamy 10 niepolaczonych miedzy soba miast. Co chcesz zrobic?");
+		System.out.println("1. Zmienic nazwe miasta\n" + "2. Dodac polaczenie z jednego do drugiego miasta\n"
+				+ "3. Wyswietlic wszystkie polaczenia z miasta\n" + "4. Znalezc najszybsza droge\n"
+				+ "5. Usunac polaczenie\n" + "6. Wyswietlic miasta\n" + "0. Koniec programu\n");
+
+		key = scan.nextInt();
+		switch (key) {
+		case 1:
+			System.out.println("Wprowadz indeks miasta");
+			int jakieMiasto = scan.nextInt();
+			System.out.println("Wprowadz nowa nazwe miasta");
+			String nazwa = scan.next();
+			zmienNazweMiasta(nazwa, jakieMiasto);
+
+			menu();
+			break;
+		case 2:
+			System.out.println("Wprowadz indeks miasta poczatkowego: ");
+			jakieMiasto = scan.nextInt();
+			System.out.println("Wprowadz indeks miasta drugiego: ");
+			int gdzie = scan.nextInt();
+			System.out.println("Wprowadz dlugosc drogi: ");
+			int dlugosc = scan.nextInt();
+			dodajPolaczenie(jakieMiasto, gdzie, dlugosc);
+
+			menu();
+			break;
+		case 3:
+			System.out.println("Wprowadz indeks miasta: ");
+			jakieMiasto = scan.nextInt();
+			wszystkieDrogi(jakieMiasto);
+
+			menu();
+			break;
+		case 4:
+			System.out.println("Wprowadz wyjsciowe miasto: ");
+			String wyjsciowe = scan.next();
+			System.out.println("Wprowadz docelowe miasto: ");
+			String docelowe = scan.next();
+			najszybszaDroga(wyjsciowe, docelowe);
+
+			menu();
+			break;
+		case 5:
+			System.out.println("Wprowadz indeks miasta poczatkowego: ");
+			jakieMiasto = scan.nextInt();
+			System.out.println("Wprowadz indeks miasta drugiego: ");
+			gdzie = scan.nextInt();
+			System.out.println("Wprowadz dlugosc drogi: ");
+			dlugosc = scan.nextInt();
+			usunacPolaczenie(jakieMiasto, gdzie, dlugosc);
+
+			menu();
+			break;
+		case 6:
+			System.out.println("Wyswietlic tylko polaczone miedzy soba miasta (1) lub wszystkie (2)?");
+			key = scan.nextInt();
+			switch (key) {
+			case 1:
+
+				wszystkieMiastaZDrogami();
+				break;
+			case 2:
+				wszystkieMiasta();
+				break;
+			default:
+				System.out.println("Cos zle poszlo");
+			}
+
+			menu();
+			break;
+		case 0:
+			System.out.println("Koniec programu...");
+			break;
+
+		default:
+			System.out.println("Nieprawidlowa odpowiedz, sprobuj ponownie");
+			menu();
+			break;
+		}
+
+	}
+
 	public static void main(String args[]) {
 		Graph g = new Graph();
 
-		// g.dodajPolaczenie(0, 1, 4);
-		// g.dodajPolaczenie(0, 1, 100500);
-		// g.dodajPolaczenie(0, 2, 1);
-		// g.dodajPolaczenie(0, 3, 2);
-		// g.dodajPolaczenie(0, 3, 1);
-		// g.dodajPolaczenie(3, 4, 20);
-		// g.dodajPolaczenie(3, 4, 10);
 		g.dodajPolaczenie(0, 1, 3);
 		g.dodajPolaczenie(0, 1, 10);
 		g.dodajPolaczenie(0, 3, 1);
@@ -218,11 +338,8 @@ public class Graph {
 		g.zmienNazweMiasta("C", 2);
 		g.zmienNazweMiasta("E", 4);
 
-		// g.wszystkieDrogi("A");
-		// g.najszybszaDroga("A", "B");
-		g.najszybszaDroga("A", "C");
+		g.menu();
 
-		// System.out.println(g.wszystkieMiastaZDrogami());
 	}
 
 }
